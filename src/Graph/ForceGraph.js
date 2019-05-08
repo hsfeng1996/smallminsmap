@@ -25,11 +25,11 @@ class ForceGraph extends React.Component{
     }
 	}
 	
-	handleResize(){
+	handleResize = () => {
 		this.graph.setFitView('cc');
 	}
 	
-	draw(data){
+	draw = (data) => {
     const { showLabel } = this.props;
     const getheight = () => {
       let {height} = this.props;
