@@ -5,7 +5,7 @@ module.exports = {
     filename: "index.js"//打包后输出文件的文件名
   },
   mode: 'production',
-  devtool: 'eval-source-map',
+  //devtool: 'eval-source-map',
   devServer: {
     contentBase: "./lib",//本地服务器所加载的页面所在的目录
     historyApiFallback: true,//不跳转
