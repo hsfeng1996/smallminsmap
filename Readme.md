@@ -2,7 +2,9 @@
 
 ## 1. 安装模块
 
+```
 npm install –save-dev smallminsmap
+```
 
 ## 2. 使用说明
 
