@@ -8,7 +8,9 @@ npm install –save-dev smallminsmap
 
 第一步 导入模块（minsmap）
 
+```
 import minsmap from ‘smallminsmap’;
+```
 
 第二步 创建容器（dom元素）
 
@@ -16,14 +18,19 @@ import minsmap from ‘smallminsmap’;
 <div id='root' style="width:500px;"></div>
 ```
 
+```
 let el = document.getElementById('root');
+```
 
 第三步 获取数据
 
+```
 let data = {nodes:[], edges:[]}
+```
 
 第四步 创建配置
 
+```
 let config = {
 
   	width: 0,
@@ -39,55 +46,65 @@ let config = {
  	 callback: (model)=>{console.log(model)},
 
 } //默认配置
+```
 
 第五部 生成图形
 
+```
 minsmap(el,data,config);
+```
 
 ## 3. 数据说明
 
 图数据data
 
+```
 {nodes:[node, node, …], edegs:[edge, edge, …]}
+```
 
 节点node: 
 
+```
 {
 
-​		id: -1,
+	id: -1,
 
-​		label: “”,
+	label: “”,
 
-​		// SELECT, INSERT, UPDATE, DELETE
+	// SELECT, INSERT, UPDATE, DELETE
 
-​		status: “”,
+	status: “”,
 
-​		properties: {},
+	properties: {},
 
 }
+```
 
-​       边edge: 
+边edge: 
 
+```
 {
 
-​       id: “”,
+	id: “”,
 
-​       type: “”,
+	type: “”,
 
-​       // SELECT, INSERT, UPDATE, DELETE
+	// SELECT, INSERT, UPDATE, DELETE
 
-​       status: “”,
+	status: “”,
 
-​       properties: {},
+	properties: {},
 
-​       sourceNode: {},
+	sourceNode: {},
 
-​       targetNode: {},
+	targetNode: {},
 
 }
+```
 
 配置config
 
+```
 {
 
  	width: 0, // 图的宽度
@@ -103,3 +120,5 @@ minsmap(el,data,config);
  	callback: ()=>{}, // 单击回调函数
 
 }
+```
+
