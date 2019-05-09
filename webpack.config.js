@@ -4,7 +4,7 @@ module.exports = {
     path: __dirname + "/lib",//打包后的文件存放的地方
     filename: "index.js"//打包后输出文件的文件名
   },
-  mode: 'production',
+  //mode: 'development',
   //devtool: 'eval-source-map',
   devServer: {
     contentBase: "./lib",//本地服务器所加载的页面所在的目录

@@ -1,20 +1,38 @@
 import React from 'react';
 import { render } from 'react-dom';
-import $ from 'jquery';
 import Graph from './Graph';
 
-let labels = ['老师','学生','_SCHEMA'];
+let defaultconfig = {
+  width: 0,
+  height: 500,
+  size: 30,
+  showLabel: true,
+  colorMap: {},
+  callback: (model)=>{console.log(model)},
+}
 
-$.ajax({
-  type: "POST",
-  url: '/neo4j/select/graph',
-  contentType: "application/json;charset=UTF-8",
-  data: JSON.stringify(labels),
-  success: (data,status)=>{
-    console.log(data);
-    render(<Graph data={data} />, document.getElementById('root'));
-  },
-  error: (msg)=>{
-    console.log(msg);
-  }
-});
+function initGraph(el, data, config){
+  defaultconfig.colorMap = initcolorMap(data);
+  const cfg = {...defaultconfig, ...config};
+  render(<Graph data={data} config={cfg}/>, el);
+}
+
+function initcolorMap(data){
+  let labels = new Array();
+  data.nodes.map((value,index)=>{
+    if(!labels.includes(value.label)) labels.push(value.label);
+  });
+  let colorMap = {};
+  labels.map((value,index)=>{colorMap[value]='#'+ Math.random().toString(16).substr(2,6);});
+  return colorMap;
+}
+
+window._smallminsmaptest = function(el, data, config){
+  initGraph(el,data,config);
+}
+
+exports.printTest = function() {
+  console.log("This is a test. Prove that you imported the module correctly!");
+}
+
+exports.initGraph = initGraph;

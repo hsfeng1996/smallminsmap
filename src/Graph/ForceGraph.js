@@ -3,26 +3,17 @@ import G6 from '@antv/g6';
 import Plugins from '@antv/g6/plugins';
 import * as d3 from 'd3';
 
-
 class ForceGraph extends React.Component{
 	constructor(props){
 		super(props);
     this.state = {
-      
     };
 	}
 	
 	componentDidMount(){
-    let {data, types} = this.props;
-    let colorMap = {};
-    types.map((type)=>{colorMap[type]='#'+ Math.random().toString(16).substr(2,6);});
-    this.setState({colorMap:colorMap});
-    if(data.nodes.length!=0){
-      setTimeout(()=>{
-        this.draw(data);
-        window.addEventListener('resize',this.handleResize);
-      },100);
-    }
+    let { data } = this.props;
+    this.draw(data);
+    window.addEventListener('resize',this.handleResize);
 	}
 	
 	handleResize = () => {
@@ -30,14 +21,9 @@ class ForceGraph extends React.Component{
 	}
 	
 	draw = (data) => {
-    const { showLabel } = this.props;
-    const getheight = () => {
-      let {height} = this.props;
-      if(height) return height;
-      return window.innerHeight-36;
-    };
+    const { config } = this.props;
+    const { height, colorMap, showLabel, callback } = config;
     
-    const {colorMap} = this.state;
     let colors = Object.keys(colorMap).map(key=>colorMap[key]);
     
 		var Mapper = G6.Plugins['tool.d3.mapper'];
@@ -50,21 +36,21 @@ class ForceGraph extends React.Component{
 		  forceCollide = _d.forceCollide;
 
 		//var nodeMap = {};
-		var nodeSizeMapper = new Mapper('node', 'degree', 'size', [48, 48], {legendCfg: null});
+		var nodeSizeMapper = new Mapper('node', 'degree', 'size', [10, 48], {legendCfg: null});
 		var nodeColorMapper = new Mapper('node', 'type', 'color', colors,{legendCfg:null});
 		//var G = G6.G;
 		var simulation = void 0;
 		var graph = new G6.Graph({
 		  container: 'mountNode',
-		  height: getheight(),
-		  plugins: [],//[nodeSizeMapper, nodeColorMapper],
+		  height: height,
+		  plugins: [],//nodeSizeMapper, nodeColorMapper],
 		  modes: {default: ['rightPanCanvas','wheelZoom']
 		  },
 		  layout: function layout(nodes, edges) {
         if (simulation) {
           simulation.alphaTarget(0.3).restart();
         } else {
-          simulation = forceSimulation(nodes).force('charge', forceManyBody().strength(-1000)).force('link', forceLink(edges).id(function(model) {
+          simulation = forceSimulation(nodes).force('charge', forceManyBody().strength(-500)).force('link', forceLink(edges).id(function(model) {
             return model.id;
           })).force('collision', forceCollide().radius(function(model) {
             return model.size / 2 * 1.2;
@@ -90,7 +76,7 @@ class ForceGraph extends React.Component{
         return {
           text: model.properties['name'],
           stroke: null,
-          fill: '#fff'
+          fill: '#000'
         };
 		  }
 		});
@@ -101,11 +87,10 @@ class ForceGraph extends React.Component{
           lineWidth: 2
         };
 		  },
-		  
 		  label: function label(model) {
-			return {
-			  text: model.properties['name'],
-			};
+        return {
+          text: model.properties['name'],
+        };
 		  },
 		  labelRectStyle: { opacity: 0 },
 		  
@@ -116,9 +101,9 @@ class ForceGraph extends React.Component{
 		// 拖拽节点交互
 		var subject = void 0; // 逼近点
 		graph.on('mousedown', function(ev) {
-		  if (ev.domEvent.button === 0) {
-			subject = simulation.find(ev.x, ev.y);
-		  }
+      if(ev.item){
+        subject = ev.item.getModel();
+      }
 		});
 
 		graph.on('dragstart', function(ev) {
@@ -127,8 +112,8 @@ class ForceGraph extends React.Component{
 
 		graph.on('drag', function(ev) {
 		  if (subject) {
-			subject.fx = ev.x;
-			subject.fy = ev.y;
+        subject.fx = ev.x;
+        subject.fy = ev.y;
 		  }
 		});
 
@@ -151,6 +136,7 @@ class ForceGraph extends React.Component{
 		  var labelBox = label.getBBox();
 		  if (labelBox.maxX - labelBox.minX > model.size) {
         label.hide();
+        console.log(label);
         graph.draw();
 		  }
 		}
@@ -159,12 +145,11 @@ class ForceGraph extends React.Component{
 		
 		edges.forEach(function(edge) {
 		  edge.getGraphicGroup().set('capture', false); // 移除边的捕获，提升图形拾取效率
-		  //tryHideLabel(edge);
+		  tryHideLabel(edge);
 		});  
 
 		nodes.forEach(function(node) {
-      console.log(showLabel);
-		  showLabel||tryHideLabel(node);
+      showLabel||tryHideLabel(node);
 		});
 
 		graph.on('node:mouseenter', function(ev) {
@@ -180,7 +165,7 @@ class ForceGraph extends React.Component{
 		});
     
     graph.on('node:click',(ev)=>{
-      //window.location.href='http://www.baidu.com';
+      callback(ev.item.getModel());
     });
 	}
 	

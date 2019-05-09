@@ -6,28 +6,18 @@ class Force extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      selectedLabels: [],
-      showLabel: true
     };
   }
-  
-  componentWillMount(){
-    const { data } = this.props;
-    this.format(data);
-	}
   
   random = (min,max) => {
     return Math.floor(Math.random()*(max-min+1))+min;
   }
   
   format = (data) => {
-    let selectedLabels = new Array();
     let nodes = data.nodes.map((value,index)=>{
-      if(!selectedLabels.includes(value.label)) selectedLabels.push(value.label);
       return {
-        size: 40,
+        size: this.props.config.size,
         type: value.label,
-        //degree: this.random(10,20),
         ...value,
         label: value.properties.name,
         id: `n_${value.id}`,
@@ -41,14 +31,12 @@ class Force extends React.Component {
         target: `n_${value.targetNode.id}`,
       };
     });
-    this.setState({data:{nodes:nodes,edges:edges}, selectedLabels});
+    return {nodes:nodes,edges:edges};
   }
   
   createGraph = () => {
-    let { data, selectedLabels, showLabel } = this.state;
-    if(this.state.data)
-      return <ForceGraph url='/neo4j/select/graph' data={data} types={selectedLabels} showLabel={showLabel}/>;
-    return null;
+    const { data, config } = this.props;
+    return <ForceGraph data={this.format(data)} config={config} />;
   };
   
   render(){
