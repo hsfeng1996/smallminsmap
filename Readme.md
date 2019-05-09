@@ -119,7 +119,7 @@ minsmap(el,data,config);
 
  	colorMap: {}, // 节点颜色映射（节点颜色设置）
 
- 	callback: ()=>{}, // 单击回调函数
+ 	callback: (model)=>{console.log(model)},// 单击回调函数
 
 }
 ```
