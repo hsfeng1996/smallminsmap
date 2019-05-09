@@ -28,11 +28,12 @@ function initcolorMap(data){
 }
 
 window._smallminsmaptest = function(el, data, config){
-  initGraph(el,data,config);
+  initGraph(document.getElementById('root'),data,{})
 }
 
-exports.printTest = function() {
+export function printTest(){
   console.log("This is a test. Prove that you imported the module correctly!");
 }
 
-exports.initGraph = initGraph;
+
+export default initGraph;
