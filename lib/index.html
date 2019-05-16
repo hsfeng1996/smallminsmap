@@ -19,7 +19,7 @@
           contentType: "application/json;charset=UTF-8",
           data: JSON.stringify(labels),
           success: function(data,status){
-            _smallminsmaptest(document.getElementById('root'),data,{});
+            initGraph(document.getElementById('root'),data,{});
           },
           error: function(msg){
             console.log(msg);

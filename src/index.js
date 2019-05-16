@@ -27,8 +27,8 @@ function initcolorMap(data){
   return colorMap;
 }
 
-window._smallminsmaptest = function(el, data, config){
-  initGraph(document.getElementById('root'),data,{})
+window.initGraph = function(el, data, config){
+  initGraph(el,data,{})
 }
 
 export function printTest(){
