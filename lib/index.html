@@ -13,18 +13,23 @@
     <script>
       $(document).ready(function(){
         var labels = ['老师','学生','_SCHEMA'];
+        $.get("/neo4j/select/graph?mapName=test&userAccount=test",function(data,status){
+          initGraph(document.getElementById('root'),data.data,{height:100});
+        });
+        /*
         $.ajax({
-          type: "POST",
+          type: "GET",
           url: '/neo4j/select/graph',
-          contentType: "application/json;charset=UTF-8",
-          data: JSON.stringify(labels),
+          //contentType: "application/json;charset=UTF-8",
+          //data: JSON.stringify(labels),
           success: function(data,status){
-            initGraph(document.getElementById('root'),data,{});
+            
           },
           error: function(msg){
             console.log(msg);
           }
         });
+        */
       });
     </script>
   </body>

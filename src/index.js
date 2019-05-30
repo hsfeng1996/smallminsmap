@@ -14,6 +14,7 @@ let defaultconfig = {
 function initGraph(el, data, config){
   defaultconfig.colorMap = initcolorMap(data);
   const cfg = {...defaultconfig, ...config};
+  console.log(cfg);
   render(<Graph data={data} config={cfg}/>, el);
 }
 
@@ -28,7 +29,7 @@ function initcolorMap(data){
 }
 
 window.initGraph = function(el, data, config){
-  initGraph(el,data,{})
+  initGraph(el,data,config)
 }
 
 export function printTest(){
