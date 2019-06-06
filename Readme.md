@@ -11,13 +11,13 @@ npm install –save-dev smallminsmap
 第一步 导入模块（minsmap）
 
 ```
-import minsmap from ‘smallminsmap’;
+import minsmap from ‘smallminsmap’;  // <script src="index.js"></script>
 ```
 
 第二步 创建容器（dom元素）
 
 ```
-<div id='root' style="width:500px;"></div>
+<div id='root'></div>
 ```
 
 ```
@@ -35,17 +35,17 @@ let data = {nodes:[], edges:[]}
 ```
 let config = {
 
-  	width: 0,
+  	width: 500,
 
- 	 height: 500,
+ 	height: 500,
 
   	size: 30,
 
   	showLabel: true,
 
- 	 colorMap: {},
+ 	colorMap: {},
 
- 	 callback: (model)=>{console.log(model)},
+ 	callback: null,
 
 } //默认配置
 ```
@@ -53,7 +53,7 @@ let config = {
 第五部 生成图形
 
 ```
-minsmap(el,data,config);
+minsmap(el,data,config);  // initGraph(document.getElementById('root'),data.data,{});
 ```
 
 ## 3. 数据说明
@@ -109,17 +109,17 @@ minsmap(el,data,config);
 ```
 {
 
- 	width: 0, // 图的宽度
+ 	width: 500, // 图的宽度
 
  	height: 500, // 图的高度
 
- 	size: 30, // 节点大小
+ 	size: 30, // 节点大小，默认30px
 
- 	showLabel: true, // 是否显示标签
+ 	// showLabel: true, // 是否显示标签
 
  	colorMap: {}, // 节点颜色映射（节点颜色设置）
 
- 	callback: (model)=>{console.log(model)}, // 单击回调函数
+ 	callback: null, // 单击回调函数，例：(model)=>{console.log(model)}
 
 }
 ```
