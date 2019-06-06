@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
 import ForceGraph from './ForceGraph';
 
 class Force extends React.Component {
@@ -14,9 +13,13 @@ class Force extends React.Component {
   }
   
   format = (data) => {
+    const { colorMap } = this.props.config;
     let nodes = data.nodes.map((value,index)=>{
       return {
         size: this.props.config.size,
+        style: {
+          fill: colorMap[value.label],
+        },
         type: value.label,
         ...value,
         label: value.properties.name,

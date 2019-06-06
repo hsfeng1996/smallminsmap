@@ -7,29 +7,14 @@
     <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
-    <div id='root' style="width:500px;">
+    <div id='root'>
     </div>
     <script src="index.js"></script>
     <script>
       $(document).ready(function(){
-        var labels = ['老师','学生','_SCHEMA'];
         $.get("/neo4j/select/graph?mapName=test&userAccount=test",function(data,status){
-          initGraph(document.getElementById('root'),data.data,{height:100});
+          initGraph(document.getElementById('root'),data.data,{});
         });
-        /*
-        $.ajax({
-          type: "GET",
-          url: '/neo4j/select/graph',
-          //contentType: "application/json;charset=UTF-8",
-          //data: JSON.stringify(labels),
-          success: function(data,status){
-            
-          },
-          error: function(msg){
-            console.log(msg);
-          }
-        });
-        */
       });
     </script>
   </body>

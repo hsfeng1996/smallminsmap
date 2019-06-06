@@ -3,18 +3,18 @@ import { render } from 'react-dom';
 import Graph from './Graph';
 
 let defaultconfig = {
-  width: 0,
+  width: 500,
   height: 500,
+  backgroundColor: null,
   size: 30,
   showLabel: true,
   colorMap: {},
-  callback: (model)=>{console.log(model)},
+  callback: null,
 }
 
 function initGraph(el, data, config){
   defaultconfig.colorMap = initcolorMap(data);
   const cfg = {...defaultconfig, ...config};
-  console.log(cfg);
   render(<Graph data={data} config={cfg}/>, el);
 }
 

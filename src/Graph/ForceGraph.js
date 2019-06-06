@@ -1,6 +1,5 @@
 import React from 'react';
 import G6 from '@antv/g6';
-import Plugins from '@antv/g6/plugins';
 import * as d3 from 'd3';
 
 class ForceGraph extends React.Component{
@@ -13,165 +12,148 @@ class ForceGraph extends React.Component{
 	componentDidMount(){
     let { data } = this.props;
     this.draw(data);
-    window.addEventListener('resize',this.handleResize);
+    //window.addEventListener('resize',this.handleResize);
 	}
 	
 	handleResize = () => {
-		this.graph.setFitView('cc');
+		//this.graph.setFitView('cc');
 	}
 	
 	draw = (data) => {
     const { config } = this.props;
-    const { height, colorMap, showLabel, callback } = config;
-    
-    let colors = Object.keys(colorMap).map(key=>colorMap[key]);
-    
-		var Mapper = G6.Plugins['tool.d3.mapper'];
-		var _d = d3,
-		  forceSimulation = _d.forceSimulation,
-		  forceLink = _d.forceLink,
-		  forceManyBody = _d.forceManyBody,
-		  forceX = _d.forceX,
-		  forceY = _d.forceY,
-		  forceCollide = _d.forceCollide;
-
-		//var nodeMap = {};
-		var nodeSizeMapper = new Mapper('node', 'degree', 'size', [10, 48], {legendCfg: null});
-		var nodeColorMapper = new Mapper('node', 'type', 'color', colors,{legendCfg:null});
-		//var G = G6.G;
-		var simulation = void 0;
-		var graph = new G6.Graph({
-		  container: 'mountNode',
-		  height: height,
-		  plugins: [],//nodeSizeMapper, nodeColorMapper],
-		  modes: {default: ['rightPanCanvas','wheelZoom']
-		  },
-		  layout: function layout(nodes, edges) {
-        if (simulation) {
-          simulation.alphaTarget(0.3).restart();
-        } else {
-          simulation = forceSimulation(nodes).force('charge', forceManyBody().strength(-500)).force('link', forceLink(edges).id(function(model) {
-            return model.id;
-          })).force('collision', forceCollide().radius(function(model) {
-            return model.size / 2 * 1.2;
-          })).force('y', forceY()).force('x', forceX()).on('tick', function() {
-            graph.updateNodePosition();
-          });
+    const { width, height, callback } = config;
+    var graph = new G6.Graph({
+      container: 'mountNode',
+      width: width,
+      height: height,
+      autoPaint: false,
+      modes: {
+        default: ['drag-canvas', {
+          /*
+          type: 'tooltip',
+          formatText: function formatText(model) {
+            return model.properties.name;
+          }
+          */
+        }, {
+            type: 'edge-tooltip',
+            formatText: function formatText(model, e) {
+              var edge = e.item;
+              return '来源：' + edge.getSource().getModel().properties.name + '<br/>去向：' + edge.getTarget().getModel().properties.name;
+            }
+        }]
+      },
+      defaultNode: {
+        size: [10, 10],
+        color: 'steelblue',
+        labelCfg: {
+          position: 'right',
+        },
+      },
+      defaultEdge: {
+        size: 1
+      },
+      nodeStyle: {
+        default: {
+          lineWidth: 2,
+          fill: 'steelblue'
+        },
+        highlight: {
+          opacity: 1
+        },
+        dark: {
+          opacity: 0.2
         }
-		  }
-		});
-		this.graph = graph;
-		graph.node({
-		  style: function style(model) {
-        return {
-          fill: colorMap[model.type],//'#002a67',
-          shadowColor: 'rgba(0,0,0, 0.3)',
-          shadowBlur: 3,
-          shadowOffsetX: 3,
-          shadowOffsetY: 5,
-          stroke: null
-        };
-		  },
-		  label: function label(model) {
-        return {
-          text: model.properties['name'],
-          stroke: null,
-          fill: '#000'
-        };
-		  }
-		});
-		graph.edge({
-		  style: function style() {
-        return {
-          stroke: '#b3b3b3',
-          lineWidth: 2
-        };
-		  },
-		  label: function label(model) {
-        return {
-          text: model.properties['name'],
-        };
-		  },
-		  labelRectStyle: { opacity: 0 },
-		  
-		});
-		graph.read(data);
-		graph.translate(graph.getWidth() / 2, graph.getHeight() / 2);
-		
-		// 拖拽节点交互
-		var subject = void 0; // 逼近点
-		graph.on('mousedown', function(ev) {
-      if(ev.item){
-        subject = ev.item.getModel();
+      },
+      edgeStyle: {
+        default: {
+          stroke: '#e2e2e2',
+          lineAppendWidth: 2
+        },
+        highlight: {
+          stroke: '#000000'
+        }
       }
-		});
-
-		graph.on('dragstart', function(ev) {
-		  subject && simulation.alphaTarget(0.3).restart();
-		});
-
-		graph.on('drag', function(ev) {
-		  if (subject) {
-        subject.fx = ev.x;
-        subject.fy = ev.y;
-		  }
-		});
-
-		graph.on('mouseup', resetState);
-		graph.on('canvas:mouseleave', resetState);
-
-		function resetState() {
-		  if (subject) {
-        simulation.alphaTarget(0);
-        subject.fx = null;
-        subject.fy = null;
-        subject = null;
-		  }
-		}
-		
-		// 鼠标移入节点显示 label
-		function tryHideLabel(node) {
-		  var model = node.getModel();
-		  var label = node.getLabel();
-		  var labelBox = label.getBBox();
-		  if (labelBox.maxX - labelBox.minX > model.size) {
-        label.hide();
-        console.log(label);
-        graph.draw();
-		  }
-		}
-		var nodes = graph.getNodes();
-		var edges = graph.getEdges();
-		
-		edges.forEach(function(edge) {
-		  edge.getGraphicGroup().set('capture', false); // 移除边的捕获，提升图形拾取效率
-		  tryHideLabel(edge);
-		});  
-
-		nodes.forEach(function(node) {
-      showLabel||tryHideLabel(node);
-		});
-
-		graph.on('node:mouseenter', function(ev) {
-		  var item = ev.item;
-		  graph.toFront(item);
-		  item.getLabel().show();
-		  graph.draw();
-		});
-
-		graph.on('node:mouseleave', function(ev) {
-		  var item = ev.item;
-		  showLabel||tryHideLabel(item);
-		});
-    
-    graph.on('node:click',(ev)=>{
-      callback(ev.item.getModel());
     });
+
+    function clearAllStats() {
+      graph.setAutoPaint(false);
+      graph.getNodes().forEach(function(node) {
+        graph.clearItemStates(node);
+      });
+      graph.getEdges().forEach(function(edge) {
+        graph.clearItemStates(edge);
+      });
+      graph.paint();
+      graph.setAutoPaint(true);
+    }
+    graph.on('node:mouseenter', function(e) {
+      var item = e.item;
+      graph.setAutoPaint(false);
+      graph.getNodes().forEach(function(node) {
+        graph.clearItemStates(node);
+        graph.setItemState(node, 'dark', true);
+      });
+      graph.setItemState(item, 'dark', false);
+      graph.setItemState(item, 'highlight', true);
+      graph.getEdges().forEach(function(edge) {
+        if (edge.getSource() === item) {
+          graph.setItemState(edge.getTarget(), 'dark', false);
+          graph.setItemState(edge.getTarget(), 'highlight', true);
+          graph.setItemState(edge, 'highlight', true);
+          edge.toFront();
+        } else if (edge.getTarget() === item) {
+          graph.setItemState(edge.getSource(), 'dark', false);
+          graph.setItemState(edge.getSource(), 'highlight', true);
+          graph.setItemState(edge, 'highlight', true);
+          edge.toFront();
+        } else {
+          graph.setItemState(edge, 'highlight', false);
+        }
+      });
+      graph.paint();
+      graph.setAutoPaint(true);
+    });
+    graph.on('node:mouseleave', function(e){
+      clearAllStats();
+    });
+    //graph.on('canvas:click', clearAllStats);
+    graph.on('node:click', function(e){
+      clearAllStats();
+      graph.setAutoPaint(false);
+      graph.getNodes().forEach(function(node) {
+        graph.update(node,{size:30});
+      });
+      graph.update(e.item,{size:35});
+      graph.paint();
+      graph.setAutoPaint(true);
+      if(callback) callback(e.item.getModel());
+    });
+    
+    graph.data({
+      nodes: data.nodes,
+      edges: data.edges.map(function(edge, i) {
+        edge.id = 'edge' + i;
+        return Object.assign({}, edge);
+      })
+    });
+    var simulation = d3.forceSimulation().force("link", d3.forceLink().id(function(d) {
+      return d.id;
+    }).strength(0.5)).force("charge", d3.forceManyBody().strength(-200)).force("center", d3.forceCenter(width/2, height/2));
+    simulation.nodes(data.nodes).on("tick", ticked);
+    simulation.force("link").links(data.edges);
+
+    graph.render();
+
+    function ticked() {
+      graph.refreshPositions();
+      graph.paint();
+    }
 	}
 	
 	render() {
 		return (
-      <div id="mountNode" style={{backgroundColor:'#e5ddd1'}}></div>
+      <div id="mountNode"></div>
 		);
 	}
 }
