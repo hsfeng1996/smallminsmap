@@ -29,6 +29,8 @@ class ForceGraph extends React.Component{
       autoPaint: false,
       modes: {
         default: ['drag-canvas', {
+          type: 'zoom-canvas',
+          sensitivity: 5
           /*
           type: 'tooltip',
           formatText: function formatText(model) {
