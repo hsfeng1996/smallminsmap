@@ -1,0 +1,102 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Webpack Sample Project</title>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+<div style="width: 701px">
+    <div>
+        <div id='root'></div>
+    </div>
+</div>
+<btn onclick="document.getElementById('root').style.visibility = 'hidden'">隐藏</btn>
+<a onclick="document.getElementById('root').style.visibility = 'visible'">显示</a>
+
+<script src="index.js"></script>
+<script>
+    var oA = document.createElement("a");
+    oA.href="javascript: ;";
+    oA.innerHTML = "连接";
+    var fa = document.getElementsByClassName("fa")[0];
+    // fa.insertBefore(oA,fa.children[0]);
+
+    const urlBase = "http://222.20.72.141:8080/";
+    var hqm = {userAccount: "hqm",userPassword:"hqm",userName: "胡其美",userStatus:0,userAccess:0};
+    // $.ajax({
+    //     type: "post",
+    //     url: urlBase + "/user/insert",
+    //     contentType: "application/json;charset=UTF-8",
+    //     data: JSON.stringify(hqm),
+    //     success: function(data,status){
+    //         console.log("注册成功");
+    //         if(data.code == 200){
+    //             console.log(data);
+    //         }
+    //     },
+    //     error: function(msg){
+    //         console.log("error: " + msg);
+    //     }
+    //
+    // });
+    var property1 = {name:"test1"};
+    var property2 = {name:"test2"};
+    var node1 = {id:1,label:"labeltest",status:"SELECT",properties:{name:"father"}};
+    var node2 = {id:2,label:"labeltest",status:"SELECT",properties:{name:"son"}};
+    var edgeProperty = {name:"including"};
+    var edge1 = {
+        id:0,
+        type:"edgeTest",
+        status:"SELECT",
+        properties:edgeProperty,
+        sourceNode: node1,
+        targetNode: node2,
+    };
+    // //保存数据
+    // var req = {nodes:[node1,node2],edges:[edge1]};
+    // $.ajax({
+    //     type: "post",
+    //     url: "http://222.20.72.141:8080/neo4j/merge/graph?mapName=hqm&userAccount=hqm",
+    //     contentType: "application/json;charset=UTF-8",
+    //     data: JSON.stringify(req),
+    //     success: function(data,status){
+    //         console.log(data);
+    //         if(data.code == 200){
+    //             initGraph(document.getElementById('root'),data.data,{height:500});
+    //         }
+    //     },
+    //     error: function(msg){
+    //         console.log("error: " + msg);
+    //     }
+    // });
+    var config = {
+        width: 501,
+        height: 501,
+        size: 30,
+        showLabel: true,
+        colorMap: {},
+        callback: (model) => {console.log("don't clicked me!\n");console.log(model)}
+    }
+    //获取数据
+    $.ajax({
+        type:"get",
+        url: "http://222.20.72.141:8080/neo4j/select/graph?mapName=hqm&userAccount=hqm",
+        contentType: "application/json;charset=UTF-8",
+        success: function(data,status){
+            console.log("get data: ");
+            console.log(data);
+            if(data.code == 200){
+                // console.log(data.data);
+                initGraph(document.getElementById('root'),data.data,config);
+            }
+        },
+        error: function(msg){
+            console.log("error: " + msg);
+        }
+    })
+
+</script>
+</body>
+</html>

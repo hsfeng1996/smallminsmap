@@ -41,7 +41,8 @@ class ForceGraph extends React.Component{
             type: 'edge-tooltip',
             formatText: function formatText(model, e) {
               var edge = e.item;
-              return '来源：' + edge.getSource().getModel().properties.name + '<br/>去向：' + edge.getTarget().getModel().properties.name;
+              return edge.getModel().properties.name;
+              //return '来源：' + edge.getSource().getModel().properties.name + '<br/>去向：' + edge.getTarget().getModel().properties.name;
             }
         }]
       },
@@ -116,20 +117,14 @@ class ForceGraph extends React.Component{
       graph.paint();
       graph.setAutoPaint(true);
     });
+    
     graph.on('node:mouseleave', function(e){
       clearAllStats();
     });
     //graph.on('canvas:click', clearAllStats);
-    graph.on('node:click', function(e){
+    graph.on('node:dblclick', function(e){
       clearAllStats();
-      graph.setAutoPaint(false);
-      graph.getNodes().forEach(function(node) {
-        graph.update(node,{size:30});
-      });
-      graph.update(e.item,{size:35});
-      graph.paint();
-      graph.setAutoPaint(true);
-      if(callback) callback(e.item.getModel());
+      if(callback) callback(e.item);
     });
     
     graph.data({
@@ -146,6 +141,8 @@ class ForceGraph extends React.Component{
     simulation.force("link").links(data.edges);
 
     graph.render();
+    
+    window.graph = graph;
 
     function ticked() {
       graph.refreshPositions();

@@ -11,7 +11,9 @@ npm install –save-dev smallminsmap
 第一步 导入模块（minsmap）
 
 ```
-import minsmap from ‘smallminsmap’;  // <script src="index.js"></script>
+import minsmap from ‘smallminsmap’;  
+// <script src="index.js"></script>
+// 全局函数initGraph, 全局变量-图：graph
 ```
 
 第二步 创建容器（dom元素）
@@ -45,7 +47,7 @@ let config = {
 
  	colorMap: {},
 
- 	callback: null,
+ 	callback: null, // 双击事件，传入参数 节点node
 
 } //默认配置
 ```
@@ -53,8 +55,26 @@ let config = {
 第五部 生成图形
 
 ```
-minsmap(el,data,config);  // initGraph(document.getElementById('root'),data.data,{});
+minsmap(el,data,config);  
+// initGraph(document.getElementById('root'),data.data,{});
 ```
+
+第六部 图操作
+
+```
+获取节点：
+graph.getNodes();
+const item = graph.findById('node1');
+获取边：graph.getEdges();
+节点样式更新：
+graph.update(item,{size:35});
+graph.update(item, {
+  x: 10,
+  y: 20
+});
+```
+
+参考：[https://www.yuque.com/antv/g6/graph](https://www.yuque.com/antv/g6/graph)
 
 ## 3. 数据说明
 
@@ -119,8 +139,7 @@ minsmap(el,data,config);  // initGraph(document.getElementById('root'),data.data
 
  	colorMap: {}, // 节点颜色映射（节点颜色设置）
 
- 	callback: null, // 单击回调函数，例：(model)=>{console.log(model)}
+ 	callback: null, // 单击回调函数，例：(item)=>{console.log(item)}
 
 }
 ```
-
