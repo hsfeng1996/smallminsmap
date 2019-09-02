@@ -1,7 +1,7 @@
 import React from 'react';
 import {render} from 'react-dom';
-import GraphView from './Graph/GraphView';
-import Util from './Graph/Util';
+import GraphView from './ModelView/GraphView';
+import Util from './ModelView/Util';
 
 const { colorMapByLabel } = Util;
 
