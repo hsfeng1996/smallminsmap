@@ -1,21 +1,21 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Webpack Sample Project</title>
     <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-  </head>
-  <body>
-    <div id='root'>
-    </div>
-    <script src="index.js"></script>
-    <script>
-      $(document).ready(function(){
-        $.get("/neo4j/graph/select?mapname=课程描述1&username=hqm",function(data,status){
-          initGraph(document.getElementById('root'),data.data,{width: 600, height: 400})
+</head>
+<body>
+<div id='root'>
+</div>
+<script src="index.js"></script>
+<script>
+    $(document).ready(function () {
+        $.get("/neo4j/graph/select?mapname=课程描述1&username=hqm", function (data, status) {
+            initGraph(document.getElementById('root'), data.data, {width: 600, height: 400})
         });
-      });
-    </script>
-  </body>
+    });
+</script>
+</body>
 </html>

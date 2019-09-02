@@ -98,10 +98,13 @@ class ForceDirect extends React.Component {
     }
 
     simulate = data => {
+        let config = this.config;
         let ticked = () => {
             this.graph.refreshPositions();
             this.graph.paint();
-            this.graph.fitView();
+            if(config.autoFitViw){
+                this.graph.fitView();
+            }
         }
         var simulation = d3.forceSimulation().force('link', d3.forceLink().id(function(d) {
             return d.id;
@@ -240,13 +243,17 @@ class ForceDirect extends React.Component {
                     edge.getTarget().show();
                 });
                 graph.refresh();
-                graph.fitView();
+                if(config.autoFitView){
+                    graph.fitView();
+                }
             }
         });
 
         graph.on('node:dblclick', function(ev) {
             showAll();
-            graph.fitView();
+            if(config.autoFitView){
+                graph.fitView();
+            }
 
             if(config.callback) config.callback(ev.item);
         });

@@ -10,6 +10,7 @@ const defaultconfig = {
     height: 400,
     size: 30,
     colorMap: {},
+    autoFitViw: true,
     callback: null,
 }
 

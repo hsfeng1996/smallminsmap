@@ -12,7 +12,7 @@ npm install –save-dev smallminsmap
 
 ```
 import minsmap from ‘smallminsmap’;  
-// <script src="GraphView.js"></script>
+// <script src="index.js"></script>
 // 全局函数initGraph, 全局变量-图：graph
 ```
 
@@ -36,19 +36,11 @@ let data = {nodes:[], edges:[]}
 
 ```
 let config = {
-
-  	width: 500,
-
- 	height: 500,
-
-  	size: 30,
-
-  	showLabel: true,
-
- 	colorMap: {},
-
- 	callback: null, // 双击事件，传入参数 节点node
-
+    width: 500,
+    height: 500,
+    size: 30,
+    colorMap: {},
+    callback: null, // 双击事件，传入参数 节点node
 } //默认配置
 ```
 
@@ -69,8 +61,8 @@ const item = graph.findById('node1');
 节点样式更新：
 graph.update(item,{size:35});
 graph.update(item, {
-  x: 10,
-  y: 20
+    x: 10,
+    y: 20
 });
 ```
 
@@ -88,17 +80,9 @@ graph.update(item, {
 
 ```
 {
-
-	id: -1,
-
-	label: “”,
-
-	// SELECT, INSERT, UPDATE, DELETE
-
-	status: “”,
-
-	properties: {},
-
+    id: -1,
+    label: “”,
+    properties: {},
 }
 ```
 
@@ -106,21 +90,11 @@ graph.update(item, {
 
 ```
 {
-
-	id: “”,
-
-	type: “”,
-
-	// SELECT, INSERT, UPDATE, DELETE
-
-	status: “”,
-
-	properties: {},
-
-	sourceNode: {},
-
-	targetNode: {},
-
+    id: “”,
+    type: “”,
+    properties: {},
+    sourceNode: {},
+    targetNode: {},
 }
 ```
 
@@ -128,18 +102,11 @@ graph.update(item, {
 
 ```
 {
-
- 	width: 500, // 图的宽度
-
- 	height: 500, // 图的高度
-
- 	size: 30, // 节点大小，默认30px
-
- 	// showLabel: true, // 是否显示标签
-
- 	colorMap: {}, // 节点颜色映射（节点颜色设置）
-
- 	callback: null, // 单击回调函数，例：(item)=>{console.log(item)}
-
+    width: 500, // 图的宽度
+    height: 500, // 图的高度
+    size: 30, // 节点大小，默认30px
+    colorMap: {}, // 节点颜色映射（节点颜色设置）
+    autoFitView: true, // 画布内容自适应视口
+    callback: null, // 单击回调函数，例：(item)=>{console.log(item)}
 }
 ```
