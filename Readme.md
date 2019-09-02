@@ -12,7 +12,7 @@ npm install –save-dev smallminsmap
 
 ```
 import minsmap from ‘smallminsmap’;  
-// <script src="index.js"></script>
+// <script src="GraphView.js"></script>
 // 全局函数initGraph, 全局变量-图：graph
 ```
 

@@ -12,7 +12,7 @@
     <script src="index.js"></script>
     <script>
       $(document).ready(function(){
-        $.get("/neo4j/select/graph?mapName=test&userAccount=test",function(data,status){
+        $.get("/neo4j/graph/select?mapname=课程描述1&username=hqm",function(data,status){
           initGraph(document.getElementById('root'),data.data,{});
         });
       });
