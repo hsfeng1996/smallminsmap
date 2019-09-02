@@ -5,7 +5,7 @@ import Util from './ModelView/Util';
 
 const { colorMapByLabel } = Util;
 
-let defaultconfig = {
+/*let defaultconfig = {
     width: 600,
     height: 400,
     backgroundColor: null,
@@ -13,12 +13,11 @@ let defaultconfig = {
     showLabel: true,
     colorMap: {},
     callback: null,
-}
+}*/
 
 function initGraph(el, data, config) {
-  defaultconfig.colorMap = colorMapByLabel(data.nodes);
-  const cfg = {...defaultconfig, ...config};
-  render(<GraphView data={data} config={cfg}/>, el);
+  // defaultconfig.colorMap = colorMapByLabel(data.nodes);
+  render(<GraphView data={data} config={config}/>, el);
 }
 
 window.initGraph = function (el, data, config) {

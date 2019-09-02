@@ -1,19 +1,25 @@
 import React from 'react';
 import ForceDirect from "./ForceDirect";
+import Util from './Util';
 
-class Force extends React.Component {
-    defaultconfig = {
-        width: 500,
-        height: 500,
-        backgroundColor: null,
-        size: 30,
-        showLabel: true,
-        colorMap: {},
-        callback: null,
-    }
+const { colorMapByLabel } = Util;
 
-    random = (min, max) => {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+const defaultconfig = {
+    graphType: "force-direct",
+    width: 600,
+    height: 400,
+    size: 30,
+    colorMap: {},
+    callback: null,
+}
+
+class GraphView extends React.Component {
+
+    defaultconfig = {};
+
+    componentWillMount() {
+        this.defaultconfig = {...defaultconfig, ...this.props.config};
+        this.defaultconfig.colorMap = colorMapByLabel(this.props.data.nodes);
     }
 
     format = (data) => {
@@ -42,8 +48,14 @@ class Force extends React.Component {
     }
 
     createGraph = () => {
-        const {data, config} = this.props;
-        return <ForceDirect data={this.format(data)}/>;
+        let data = this.format(this.props.data);
+        let config = {...this.defaultconfig};
+
+        if(config.graphType === "force-direct"){
+            return <ForceDirect data={this.format(data)} config={config} />;
+        }
+
+        return <ForceDirect data={this.format(data)} config={config} />;
     };
 
 
@@ -55,4 +67,4 @@ class Force extends React.Component {
 }
 
 
-export default Force;
+export default GraphView;

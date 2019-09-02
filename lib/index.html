@@ -13,7 +13,7 @@
     <script>
       $(document).ready(function(){
         $.get("/neo4j/graph/select?mapname=课程描述1&username=hqm",function(data,status){
-          initGraph(document.getElementById('root'),data.data,{});
+          initGraph(document.getElementById('root'),data.data,{width: 600, height: 400})
         });
       });
     </script>

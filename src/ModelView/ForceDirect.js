@@ -4,9 +4,13 @@ import * as d3 from 'd3';
 
 class ForceDirect extends React.Component {
 
+    constructor(props){
+        super(props);
+        this.config = this.props.config;
+    }
+
     componentDidMount() {
         this.initGraph();
-        console.log(this.props.data);
         this.draw(this.props.data);
     }
 
@@ -37,8 +41,8 @@ class ForceDirect extends React.Component {
 
         let graph = new G6.Graph({
             container: 'forcedirect',
-            width: 900,
-            height: 600,
+            width: this.config.width, // 900,
+            height: this.config.height, // 600,
             modes: {
                 default: ['drag-canvas', {
                     type: 'tooltip',
@@ -156,6 +160,7 @@ class ForceDirect extends React.Component {
 
     listen = () => {
         let graph = this.graph;
+        let config = this.config;
 
         function clearAllStats() {
             graph.setAutoPaint(false);
@@ -242,6 +247,8 @@ class ForceDirect extends React.Component {
         graph.on('node:dblclick', function(ev) {
             showAll();
             graph.fitView();
+
+            if(config.callback) config.callback(ev.item);
         });
     };
 
