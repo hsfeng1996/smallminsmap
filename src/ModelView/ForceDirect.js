@@ -66,11 +66,13 @@ function ForceDirect(props) {
             autoPaint: false,
             modes: {
                 default: ['drag-canvas', {
-                    type: 'tooltip',
+                    type: 'zoom-canvas',
+                    sensitivity: 5,
+                    /*type: 'tooltip',
                     formatText: function formatText(model) {
                         return model.text ? (model.name + ':<br/>' + model.text) : model.name;
-                    },
-                }, {
+                    },*/
+                },/* {
                     type: 'edge-tooltip',
                     formatText: function formatText(model, e) {
                         var edge = e.item;
@@ -81,7 +83,7 @@ function ForceDirect(props) {
                             "</span>"
                         );
                     },
-                }],
+                }*/],
             },
             /*layout: {                // Object，可选，布局的方法及其配置项，默认为 random 布局。
                 type: 'force',
@@ -157,7 +159,6 @@ function ForceDirect(props) {
                 shape: 'textShape',
                 x: node.x,
                 y: node.y,
-                name: node.properties.name,
                 // text: node.properties.text,
                 style: {
                     fill: node.color
@@ -268,7 +269,7 @@ function ForceDirect(props) {
             graph.setAutoPaint(true);
         }
         
-        graph.on('node:click', function (ev) {
+        graph.on('node:dblclick', function (ev) {
             var item = ev.item;
             if (item && item.get('type') === 'node') {
                 hideAll();
@@ -284,7 +285,11 @@ function ForceDirect(props) {
             }
         });
         
-        graph.on('node:dblclick', function (ev) {
+        graph.on('node:click', function (ev) {
+            if(props.config.callback) props.config.callback(ev.item);
+        });
+    
+        graph.on('canvas:click', function (ev) {
             showAll();
             graph.fitView();
         });
