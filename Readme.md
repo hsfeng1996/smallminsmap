@@ -36,10 +36,10 @@ let data = {nodes:[], edges:[]}
 
 ```
 let config = {
-    width: 500,
-    height: 500,
-    size: 30,
-    colorMap: {},
+    width: 400, // 画布默认宽 400px
+    height: 300, // 画布默认高 300px
+    size: 20, // 节点默认大小 20px
+    collideRadius: 30, // 控制节点之间的边长，默认30px
     callback: null, // 双击事件，传入参数 节点node
 } //默认配置
 ```

@@ -1,6 +1,6 @@
 {
   "name": "smallminsmap",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "d3": "^5.9.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "uuid-js": "^0.7.5",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.3.1"

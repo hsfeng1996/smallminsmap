@@ -1,27 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import UUID from "uuid-js";
 import G6 from '@antv/g6';
 import * as d3 from 'd3';
 
-class ForceDirect extends React.Component {
-
-    constructor(props){
-        super(props);
-        this.config = this.props.config;
-    }
-
-    componentDidMount() {
-        this.initGraph();
-        this.draw(this.props.data);
-    }
-
-    initGraph = () => {
+function ForceDirect(props) {
+    
+    const divRef = useRef(null);
+    const [state, setState] = useState({
+        divId: UUID.create().toString(),
+        Graph: null,
+    });
+    
+    useEffect(() => {
+        if(props.data.nodes && props.data.nodes.length !== 0){
+            if(state.Graph){
+                state.Graph.changeData({
+                    nodes: props.data.nodes,
+                    edges: props.data.edges.map(function(edge, i) {
+                        edge.id = 'edge' + i;
+                        return Object.assign({}, edge);
+                    }),
+                });
+                simulate(props.data);
+            }else{
+                //divRef.current.innerHTML = '';
+                initGraph();
+                draw(props.data);
+            }
+        }
+    }, [props.data]);
+    
+    let initGraph = () => {
         G6.registerNode('textShape', {
             draw(cfg, group) {
                 const circle = group.addShape('circle', {
                     attrs: {
                         x: 0,
                         y: 0,
-                        r: 10,
+                        r: cfg.size/2,
                         fill: cfg.color
                     }
                 });
@@ -38,16 +54,21 @@ class ForceDirect extends React.Component {
                 return circle;
             }
         });
-
+        
+        let { config } = props;
+        let width = config.width ? config.width : divRef.current.offsetWidth;
+        let height = config.height ? config.height : divRef.current.offsetWidth * 9 / 16;
+        
         let graph = new G6.Graph({
-            container: 'forcedirect',
-            width: this.config.width, // 900,
-            height: this.config.height, // 600,
+            container: state.divId,
+            width: width,
+            height: height,
+            autoPaint: false,
             modes: {
                 default: ['drag-canvas', {
                     type: 'tooltip',
                     formatText: function formatText(model) {
-                        return model.text?(model.name + ':<br/>' + model.text):model.name;
+                        return model.text ? (model.name + ':<br/>' + model.text) : model.name;
                     },
                 }, {
                     type: 'edge-tooltip',
@@ -56,12 +77,20 @@ class ForceDirect extends React.Component {
                         // return '来源：' + edge.getSource().getModel().name + '<br/>去向：' + edge.getTarget().getModel().name;
                         return (
                             "<span style='font-weight: bold'>" +
-                                edge.getSource().getModel().name + '-' + edge.getModel().name + '->' + edge.getTarget().getModel().name +
+                            edge.getSource().getModel().name + '-' + edge.getModel().name + '->' + edge.getTarget().getModel().name +
                             "</span>"
                         );
                     },
                 }],
             },
+            /*layout: {                // Object，可选，布局的方法及其配置项，默认为 random 布局。
+                type: 'force',
+                preventOverlap: true,
+                nodeSize: 20,
+                nodeStrength: -30,
+                edgeStrength: 5,
+                linkDistance: 100,
+            },*/
             /*defaultNode: {
                 size: [10, 10],
                 color: 'steelblue',
@@ -92,32 +121,33 @@ class ForceDirect extends React.Component {
             },*/
             minZoom: 0.1,
         });
-
-        this.graph = graph;
+        
+        state.Graph = graph;
         window.graph = graph;
     }
-
-    simulate = data => {
-        let config = this.config;
+    
+    let simulate = data => {
         let ticked = () => {
-            this.graph.refreshPositions();
-            this.graph.paint();
-            if(config.autoFitViw){
-                this.graph.fitView();
-            }
+            state.Graph.refreshPositions();
+            state.Graph.paint();
+            state.Graph.fitView();
         }
-        var simulation = d3.forceSimulation().force('link', d3.forceLink().id(function(d) {
-            return d.id;
-        }).strength(0.5)).force('charge', d3.forceManyBody()).force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2));
+        var simulation = d3.forceSimulation()
+            .force('link', d3.forceLink().id(function (d) {
+                return d.id;
+            }).distance(50).strength(0.5))
+            .force('charge', d3.forceManyBody())
+            .force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+            .force("collide", d3.forceCollide(props.config.collideRadius).strength(0.2).iterations(5));
         simulation.nodes(data.nodes).on('tick', ticked);
         simulation.force('link').links(data.edges);
     }
-
-    draw = data => {
-        let graph = this.graph;
-
+    
+    let draw = data => {
+        let graph = state.Graph;
+        
         let nodeMap = {};
-
+        
         graph.node(node => {
             nodeMap[node.id] = node;
             return {
@@ -128,65 +158,72 @@ class ForceDirect extends React.Component {
                 x: node.x,
                 y: node.y,
                 name: node.properties.name,
-                text: node.properties.text,
+                // text: node.properties.text,
                 style: {
                     fill: node.color
                 },
-                labelCfg: {
+                /*labelCfg: {
                     position: 'bottom',
                     fontSize: 5
-                },
+                },*/
             };
         });
-
+        
         graph.edge(edge => {
             return {
                 ...edge,
-                source: edge.source,
-                target: edge.target,
-                color: nodeMap[edge.source].color,
+                label: edge.properties.name,
+                labelCfg: {
+                    style: {
+                        fontSize: 8
+                    },
+                },
+                style: {
+                    endArrow: true,
+                }
             };
         });
-
+        
         graph.data({
             nodes: data.nodes,
-            edges: data.edges.map(function(edge, i) {
+            edges: data.edges.map(function (edge, i) {
                 edge.id = 'edge' + i;
                 return Object.assign({}, edge);
             }),
         });
-        this.simulate(data);
+        
+        simulate(data);
+        
         graph.render();
-
-        this.listen();
+        
+        listen();
     };
-
-    listen = () => {
-        let graph = this.graph;
-        let config = this.config;
-
-        function clearAllStats() {
+    
+    let listen = () => {
+        let graph = state.Graph;
+        
+        /*function clearAllStats() {
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function(node) {
+            graph.getNodes().forEach(function (node) {
                 graph.clearItemStates(node);
             });
-            graph.getEdges().forEach(function(edge) {
+            graph.getEdges().forEach(function (edge) {
                 graph.clearItemStates(edge);
             });
             graph.paint();
             graph.setAutoPaint(true);
         }
-
-        graph.on('node:mouseenter', function(e) {
+        
+        graph.on('node:mouseenter', function (e) {
             var item = e.item;
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function(node) {
+            graph.getNodes().forEach(function (node) {
                 graph.clearItemStates(node);
                 graph.setItemState(node, 'dark', true);
             });
             graph.setItemState(item, 'dark', false);
             graph.setItemState(item, 'highlight', true);
-            graph.getEdges().forEach(function(edge) {
+            graph.getEdges().forEach(function (edge) {
                 if (edge.getSource() === item) {
                     graph.setItemState(edge.getTarget(), 'dark', false);
                     graph.setItemState(edge.getTarget(), 'highlight', true);
@@ -205,35 +242,35 @@ class ForceDirect extends React.Component {
             graph.setAutoPaint(true);
         });
         graph.on('node:mouseleave', clearAllStats);
-        graph.on('canvas:click', clearAllStats);
-
+        graph.on('canvas:click', clearAllStats);*/
+        
         function hideAll() {
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function(node) {
+            graph.getNodes().forEach(function (node) {
                 node.hide();
             });
-            graph.getEdges().forEach(function(edge) {
+            graph.getEdges().forEach(function (edge) {
                 edge.hide();
             });
             graph.paint();
             graph.setAutoPaint(true);
         }
-
+        
         function showAll() {
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function(node) {
+            graph.getNodes().forEach(function (node) {
                 node.show();
             });
-            graph.getEdges().forEach(function(edge) {
+            graph.getEdges().forEach(function (edge) {
                 edge.show();
             });
             graph.paint();
             graph.setAutoPaint(true);
         }
-
-        graph.on('node:click', function(ev) {
+        
+        graph.on('node:click', function (ev) {
             var item = ev.item;
-            if(item && item.get('type') === 'node') {
+            if (item && item.get('type') === 'node') {
                 hideAll();
                 item.show();
                 let edges = item.getEdges(); //item.get('edges');
@@ -243,27 +280,19 @@ class ForceDirect extends React.Component {
                     edge.getTarget().show();
                 });
                 graph.refresh();
-                if(config.autoFitView){
-                    graph.fitView();
-                }
-            }
-        });
-
-        graph.on('node:dblclick', function(ev) {
-            showAll();
-            if(config.autoFitView){
                 graph.fitView();
             }
-
-            if(config.callback) config.callback(ev.item);
+        });
+        
+        graph.on('node:dblclick', function (ev) {
+            showAll();
+            graph.fitView();
         });
     };
-
-    render() {
-        return (
-            <div id="forcedirect"></div>
-        );
-    }
+    
+    return (
+        <div id={state.divId} ref={divRef}></div>
+    );
 }
 
 export default ForceDirect;
