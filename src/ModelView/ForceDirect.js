@@ -112,8 +112,8 @@ function ForceDirect(props) {
         
         let graph = new G6.Graph({
             container: state.divId,
-            width: width * 4,
-            height: height * 4,
+            width: width,
+            height: height,
             modes: modes,
             layout: layout,
             autoPaint: true,
