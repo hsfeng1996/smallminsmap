@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import UUID from "uuid-js";
+import UUID from 'uuid-js';
 import G6 from '@antv/g6';
 import * as d3 from 'd3';
 
@@ -12,23 +12,23 @@ function ForceDirect(props) {
     });
     
     useEffect(() => {
-        if(props.data.nodes && props.data.nodes.length !== 0){
-            if(state.Graph){
-                state.Graph.changeData({
-                    nodes: props.data.nodes,
-                    edges: props.data.edges.map(function(edge, i) {
-                        edge.id = 'edge' + i;
-                        return Object.assign({}, edge);
-                    }),
-                });
-                simulate(props.data);
-            }else{
-                //divRef.current.innerHTML = '';
-                initGraph();
-                draw(props.data);
-            }
+        // if (props.data.nodes && props.data.nodes.length !== 0) {
+        if (false && (!props.config.reparable) && state.Graph) {
+            state.Graph.changeData({
+                nodes: props.data.nodes,
+                edges: props.data.edges.map(function(edge, i) {
+                    edge.id = 'edge' + i;
+                    return Object.assign({}, edge);
+                }),
+            });
+        } else {
+            console.log(divRef);
+            divRef.current.innerHTML = '';
+            initGraph();
+            draw(props.data);
         }
-    }, [props.data]);
+        // }
+    }, [props]);
     
     let initGraph = () => {
         G6.registerNode('textShape', {
@@ -37,9 +37,9 @@ function ForceDirect(props) {
                     attrs: {
                         x: 0,
                         y: 0,
-                        r: cfg.size/2,
-                        fill: cfg.color
-                    }
+                        r: cfg.size / 2,
+                        fill: cfg.color,
+                    },
                 });
                 const text = group.addShape('text', {
                     attrs: {
@@ -48,102 +48,81 @@ function ForceDirect(props) {
                         textAlign: 'center',
                         fontSize: 10,
                         text: cfg.label,
-                        fill: '#444'
-                    }
+                        fill: '#444',
+                    },
                 });
                 return circle;
-            }
+            },
+        });
+        
+        G6.registerLayout('forcedirect', {
+            getDefaultCfg: function getDefaultCfg() {
+                return {
+                    collideRadius: 50,
+                };
+            },
+            execute: function execute() {
+                let self = this;
+                let collideRadius = self.collideRadius;
+                let nodes = self.nodes;
+                let edges = self.edges;
+                
+                let ticked = () => {
+                    graph.refresh();
+                    graph.fitView();
+                };
+                var simulation = d3.forceSimulation()
+                    .force('link', d3.forceLink().id(d => d.id).distance(50).strength(0.5))
+                    .force('charge', d3.forceManyBody())
+                    // .force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+                    .force('collide', d3.forceCollide(collideRadius).strength(0.2).iterations(5));
+                simulation.nodes(nodes).on('tick', ticked);
+                simulation.force('link').links(edges);
+            },
         });
         
         let { config } = props;
         let width = config.width ? config.width : divRef.current.offsetWidth;
         let height = config.height ? config.height : divRef.current.offsetWidth * 9 / 16;
         
+        let modes = {
+            default: ['drag-canvas', {
+                type: 'zoom-canvas',
+                sensitivity: 1,
+            }],
+        };
+        
+        let layout = {
+            type: 'force',
+            linkDistance: 80,         // 可选，边长
+            nodeStrength: -70,         // 可选
+            edgeStrength: 1,        // 可选
+            collideStrength: 8,     // 可选
+            alpha: 0.3,               // 可选
+            alphaDecay: 0.02,        // 可选
+            alphaMin: 0.01,           // 可选
+            forceSimulation: null,    // 可选
+            nodeSize: 10,
+        };
+        
+        /*let layout = {
+            type: 'forcedirect',
+            collideRadius: 50,
+        };*/
+        
         let graph = new G6.Graph({
             container: state.divId,
-            width: width,
-            height: height,
-            autoPaint: false,
-            modes: {
-                default: ['drag-canvas', {
-                    type: 'zoom-canvas',
-                    sensitivity: 5,
-                    /*type: 'tooltip',
-                    formatText: function formatText(model) {
-                        return model.text ? (model.name + ':<br/>' + model.text) : model.name;
-                    },*/
-                },/* {
-                    type: 'edge-tooltip',
-                    formatText: function formatText(model, e) {
-                        var edge = e.item;
-                        // return '来源：' + edge.getSource().getModel().name + '<br/>去向：' + edge.getTarget().getModel().name;
-                        return (
-                            "<span style='font-weight: bold'>" +
-                            edge.getSource().getModel().name + '-' + edge.getModel().name + '->' + edge.getTarget().getModel().name +
-                            "</span>"
-                        );
-                    },
-                }*/],
-            },
-            /*layout: {                // Object，可选，布局的方法及其配置项，默认为 random 布局。
-                type: 'force',
-                preventOverlap: true,
-                nodeSize: 20,
-                nodeStrength: -30,
-                edgeStrength: 5,
-                linkDistance: 100,
-            },*/
-            /*defaultNode: {
-                size: [10, 10],
-                color: 'steelblue',
-            },
-            defaultEdge: {
-                size: 1,
-            },
-            nodeStyle: {
-                default: {
-                    lineWidth: 2,
-                    fill: 'steelblue',
-                },
-                highlight: {
-                    opacity: 1,
-                },
-                dark: {
-                    opacity: 0.2,
-                },
-            },
-            edgeStyle: {
-                default: {
-                    stroke: '#e2e2e2',
-                    lineAppendWidth: 2,
-                },
-                highlight: {
-                    stroke: '#999',
-                },
-            },*/
-            minZoom: 0.1,
+            width: width * 4,
+            height: height * 4,
+            modes: modes,
+            layout: layout,
+            autoPaint: true,
+            minZoom: 1 / props.config.zoomSize,
+            maxZoom: props.config.zoomSize,
         });
         
         state.Graph = graph;
-        window.graph = graph;
-    }
-    
-    let simulate = data => {
-        let ticked = () => {
-            state.Graph.refreshPositions();
-            state.Graph.paint();
-            state.Graph.fitView();
-        }
-        var simulation = d3.forceSimulation()
-            .force('link', d3.forceLink().id(function (d) {
-                return d.id;
-            }).distance(50).strength(0.5))
-            .force('charge', d3.forceManyBody())
-            .force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-            .force("collide", d3.forceCollide(props.config.collideRadius).strength(0.2).iterations(5));
-        simulation.nodes(data.nodes).on('tick', ticked);
-        simulation.force('link').links(data.edges);
-    }
+    };
     
     let draw = data => {
         let graph = state.Graph;
@@ -159,14 +138,9 @@ function ForceDirect(props) {
                 shape: 'textShape',
                 x: node.x,
                 y: node.y,
-                // text: node.properties.text,
                 style: {
-                    fill: node.color
+                    fill: node.color,
                 },
-                /*labelCfg: {
-                    position: 'bottom',
-                    fontSize: 5
-                },*/
             };
         });
         
@@ -176,31 +150,29 @@ function ForceDirect(props) {
                 label: edge.properties.name,
                 labelCfg: {
                     style: {
-                        fontSize: 8
+                        fontSize: 8,
                     },
                 },
                 style: {
                     endArrow: true,
-                }
+                },
             };
         });
         
         graph.data({
             nodes: data.nodes,
-            edges: data.edges.map(function (edge, i) {
+            edges: data.edges.map(function(edge, i) {
                 edge.id = 'edge' + i;
                 return Object.assign({}, edge);
             }),
         });
         
-        simulate(data);
-        
         graph.render();
         
-        listen();
+        eventListener();
     };
     
-    let listen = () => {
+    let eventListener = () => {
         let graph = state.Graph;
         
         /*function clearAllStats() {
@@ -247,10 +219,10 @@ function ForceDirect(props) {
         
         function hideAll() {
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function (node) {
+            graph.getNodes().forEach(function(node) {
                 node.hide();
             });
-            graph.getEdges().forEach(function (edge) {
+            graph.getEdges().forEach(function(edge) {
                 edge.hide();
             });
             graph.paint();
@@ -259,40 +231,52 @@ function ForceDirect(props) {
         
         function showAll() {
             graph.setAutoPaint(false);
-            graph.getNodes().forEach(function (node) {
+            graph.getNodes().forEach(function(node) {
                 node.show();
             });
-            graph.getEdges().forEach(function (edge) {
+            graph.getEdges().forEach(function(edge) {
                 edge.show();
             });
             graph.paint();
             graph.setAutoPaint(true);
         }
         
-        graph.on('node:dblclick', function (ev) {
-            var item = ev.item;
-            if (item && item.get('type') === 'node') {
-                hideAll();
-                item.show();
-                let edges = item.getEdges(); //item.get('edges');
-                edges.map(edge => {
-                    edge.show();
-                    edge.getSource().show();
-                    edge.getTarget().show();
-                });
-                graph.refresh();
+        let timeId;
+        
+        graph.on('node:click', function(ev) {
+            clearTimeout(timeId);
+            timeId = setTimeout(() => {
                 graph.fitView();
-            }
+                if(props.config.callback) {
+                    props.config.callback(ev.item);
+                }
+            }, 300);
         });
         
-        graph.on('node:click', function (ev) {
-            if(props.config.callback) props.config.callback(ev.item);
+        graph.on('node:dblclick', function(ev) {
+            clearTimeout(timeId);
+            setTimeout(() => {
+                var item = ev.item;
+                if (item && item.get('type') === 'node') {
+                    hideAll();
+                    item.show();
+                    let edges = item.getEdges(); //item.get('edges');
+                    edges.map(edge => {
+                        edge.show();
+                        edge.getSource().show();
+                        edge.getTarget().show();
+                    });
+                    graph.refresh();
+                    graph.fitView();
+                }
+                graph.fitView();
+            }, 300);
         });
-    
+        
         graph.on('canvas:click', function (ev) {
             showAll();
             graph.fitView();
-        });
+        })
     };
     
     return (

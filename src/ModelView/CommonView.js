@@ -14,9 +14,7 @@ class CommonView extends React.Component {
     };
     
     render() {
-        return (
-            <div> {this.createGraph()} </div>
-        );
+        return this.createGraph();
     }
 }
 

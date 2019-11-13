@@ -1,6 +1,6 @@
 {
   "name": "smallminsmap",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@antv/g6": "^3.0.5-beta.7",
+    "@antv/g6": "^3.1.3",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

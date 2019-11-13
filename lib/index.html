@@ -12,8 +12,8 @@
 <script src="index.js"></script>
 <script>
     $(document).ready(function () {
-        $.get("/neo4j/graph/select?mapname=课程描述1&username=hqm", function (data, status) {
-            initGraph(document.getElementById('root'), data.data, {width: 600, height: 400})
+        $.get("http://127.0.0.1:8080/neo4j/model/select?mapname=新建课程A&username=hqm", function (data, status) {
+            initGraph(document.getElementById('root'), data.data.ontology, {width: 600, height: 400, callback: ()=>{console.log(1);}})
         });
     });
 </script>

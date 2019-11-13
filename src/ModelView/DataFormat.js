@@ -6,6 +6,7 @@ const config = {
     size: 20,
     collideRadius: 30,
     callback: null,
+    zoomSize: 100,
 };
 
 function forceFormat(data, config) {
@@ -15,6 +16,7 @@ function forceFormat(data, config) {
         nodeMap[node.id] = color;
         return {
             ...node,
+            groupId: null,
             id: "" + node.id,
             size: config.size,
             color: color,
