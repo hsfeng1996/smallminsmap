@@ -10,6 +10,7 @@ class CommonView extends React.Component {
         let defaultConfig = {...config, ...this.props.config};
         let data = forceFormat(this.props.data, defaultConfig);
 
+        console.log(data);
         return <ForceDirect data={data} config={defaultConfig} />;
     };
     

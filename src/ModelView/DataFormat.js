@@ -11,25 +11,25 @@ const config = {
 
 function forceFormat(data, config) {
     let nodeMap = {};
-    let nodes = data.nodes.map((node, index) => {
+    let nodes = data.nodes.map((n, index) => {
         let color = '#' + Math.random().toString(16).substr(2, 6);
-        nodeMap[node.id] = color;
-        return {
-            ...node,
-            groupId: null,
-            id: "" + node.id,
-            size: config.size,
-            color: color,
-            label: node.properties.name,
-        };
+        let node = {...n};
+        node.id = node.uuid;
+        node.groupId = null;
+        node.size = node.size || config.size;
+        node.label = node.name || node.properties.name;
+        node.color = node.color || color;
+        nodeMap[node.uuid] = node;
+        return node;
     });
     let edges = data.edges.map((edge, index) => {
         return {
-            id: "" + edge.id,
-            source: "" + edge.sourceNode.id,
-            target: "" + edge.targetNode.id,
+            // ...edge,
+            id: edge.uuid,
+            source: edge.sourceNode.uuid,
+            target: edge.targetNode.uuid,
             properties: edge.properties,
-            color: nodeMap[edge.sourceNode.id],
+            color: nodeMap[edge.sourceNode.uuid].color,
         };
     });
     

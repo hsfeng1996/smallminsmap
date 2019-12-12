@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 function ForceDirect(props) {
     
-    const divRef = useRef(null);
+    const divRef = useRef();
     const [state, setState] = useState({
         divId: UUID.create().toString(),
         Graph: null,
@@ -22,7 +22,6 @@ function ForceDirect(props) {
                 }),
             });
         } else {
-            console.log(divRef);
             divRef.current.innerHTML = '';
             initGraph();
             draw(props.data);
@@ -162,7 +161,7 @@ function ForceDirect(props) {
         graph.data({
             nodes: data.nodes,
             edges: data.edges.map(function(edge, i) {
-                edge.id = 'edge' + i;
+                // edge.id = 'edge' + i;
                 return Object.assign({}, edge);
             }),
         });
