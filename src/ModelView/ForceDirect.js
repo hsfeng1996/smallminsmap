@@ -85,10 +85,10 @@ function ForceDirect(props) {
         let height = config.height ? config.height : divRef.current.offsetWidth * 9 / 16;
         
         let modes = {
-            default: ['drag-canvas', {
+            default: ['drag-canvas', /*{
                 type: 'zoom-canvas',
                 sensitivity: 1,
-            }],
+            }*/],
         };
         
         let layout = {
