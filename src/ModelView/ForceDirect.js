@@ -53,6 +53,14 @@ function ForceDirect(props) {
                 return circle;
             },
         });
+    
+        G6.registerLayout('noLayout', {
+            getDefaultCfg: function getDefaultCfg() {
+                return {};
+            },
+            execute: function execute() {
+            },
+        });
         
         G6.registerLayout('forcedirect', {
             getDefaultCfg: function getDefaultCfg() {
@@ -91,7 +99,7 @@ function ForceDirect(props) {
             }*/],
         };
         
-        let layout = {
+        let d3Layout = {
             type: 'force',
             linkDistance: 80,         // 可选，边长
             nodeStrength: -70,         // 可选
@@ -104,6 +112,10 @@ function ForceDirect(props) {
             nodeSize: 10,
         };
         
+        let noLayout = {
+            type: "noLayout",
+        }
+        
         /*let layout = {
             type: 'forcedirect',
             collideRadius: 50,
@@ -114,7 +126,7 @@ function ForceDirect(props) {
             width: width,
             height: height,
             modes: modes,
-            layout: layout,
+            layout: noLayout,
             autoPaint: true,
             minZoom: 1 / props.config.zoomSize,
             maxZoom: props.config.zoomSize,
@@ -153,7 +165,10 @@ function ForceDirect(props) {
                     },
                 },
                 style: {
-                    endArrow: true,
+                    endArrow: {
+                        path: 'M 3,0 L -3,-3 L -3,3 Z',  // 自定义箭头为中心点在(0, 0)，指向 x 轴正方向的path
+                        d: 3
+                    },
                 },
             };
         });
