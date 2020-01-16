@@ -127,6 +127,7 @@ function ForceDirect(props) {
             height: height,
             modes: modes,
             layout: noLayout,
+            fitView: true,
             autoPaint: true,
             minZoom: 1 / props.config.zoomSize,
             maxZoom: props.config.zoomSize,
